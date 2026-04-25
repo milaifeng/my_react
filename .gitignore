@@ -1,0 +1,26 @@
+# 构建输出
+dist/
+
+# 依赖目录
+node_modules/
+
+# packages 下子包的 node_modules
+packages/*/node_modules/
+
+# TypeScript 缓存
+.tsbuildinfo
+
+# IDE 配置
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 日志文件
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# 系统文件
+.DS_Store
+Thumbs.db

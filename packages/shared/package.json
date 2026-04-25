@@ -1,0 +1,9 @@
+{
+	"name": "shared",
+	"version": "1.0.0",
+	"description": "所有公用方法的定义以及类型定义",
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"packageManager": "pnpm@10.33.0"
+}
