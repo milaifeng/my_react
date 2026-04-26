@@ -18,7 +18,7 @@ function ChildReconciler(shouldTrackEffects: boolean) {
 		current: FiberNode | null,
 		content: string | number
 	) {
-		const fiber = new FiberNode(HostText, {}, null);
+		const fiber = new FiberNode(HostText, { content }, null);
 		fiber.return = returnFiber;
 		return fiber;
 	}

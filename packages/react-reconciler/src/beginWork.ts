@@ -5,7 +5,7 @@ import { UpdateQueue, processUpdateQueue } from './updateQueue';
 import { HostRoot, HostComponent, HostText } from './workTags';
 import { mountChildFibers, reconcileChildFibers } from './childFibers';
 
-export const beginWork = (wip: FiberNode): FiberNode | null => {
+export const beginWork = (wip: FiberNode) => {
 	// 返回子fiberNode节点
 	switch (wip.tag) {
 		case HostRoot:
@@ -45,11 +45,11 @@ const updateHostComponent = (wip: FiberNode) => {
 
 const reconcileChildren = (wip: FiberNode, children?: ReactElementType) => {
 	const current = wip.alternate;
-	if (current === null) {
+	if (current !== null) {
 		// 更新流程
-		wip.child = reconcileChildFibers(wip, null, children);
+		wip.child = reconcileChildFibers(wip, current.child, children);
 	} else {
 		// 挂载流程
-		wip.child = mountChildFibers(wip, current.child, children);
+		wip.child = mountChildFibers(wip, null, children);
 	}
 };

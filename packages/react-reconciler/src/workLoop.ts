@@ -3,6 +3,7 @@ import { beginWork } from './beginWork';
 import { completeWork } from './completeWork';
 import { HostRoot } from './workTags';
 import { MutationMask, NoFlags } from './fiberFlags';
+import { commitMutationEffects } from './commitWork';
 let workInProgress: FiberNode | null = null; // 当前正在处理的Fiber节点
 
 function prepareFreshStack(root: FiberRootNode) {
@@ -38,7 +39,7 @@ function renderRoot(root: FiberRootNode) {
 			workInProgress = null;
 		}
 	} while (true);
-	const finishedWork = root.finishedWork;
+	const finishedWork = root.current.alternate;
 	root.finishedWork = finishedWork;
 	commitRoot(root);
 }
@@ -62,7 +63,7 @@ function commitRoot(root: FiberRootNode) {
 	if (subtreeHasEffect || rootHasEffect) {
 		// beforeMutation阶段
 		// Mutation阶段
-
+		commitMutationEffects(finishedWork);
 		root.current = finishedWork;
 		// layout阶段
 	} else {
@@ -97,5 +98,6 @@ function completeUnitOfWork(fiber: FiberNode) {
 			return;
 		}
 		node = node.return;
+		workInProgress = node;
 	} while (node !== null);
 }

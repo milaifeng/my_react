@@ -1,4 +1,4 @@
-export type Container = Element;
+export type Container = Element | Document;
 export type Instance = Element;
 
 export const createInstance = (type: string, props: any) => {

@@ -22,7 +22,10 @@ export function getPackageJson(pkgName) {
 
 export function getBaseRollupPlugins({ __DEV__ = true, typescript = {} } = {}) {
 	return [
-		replace({ values: { __DEV__: JSON.stringify(__DEV__) } }),
+		replace({
+			preventAssignment: true,
+			values: { __DEV__: JSON.stringify(__DEV__) }
+		}),
 		cjs(),
 		typescript2(typescript)
 	];

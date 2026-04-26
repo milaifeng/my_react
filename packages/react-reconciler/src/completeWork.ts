@@ -3,7 +3,8 @@ import { NoFlags } from './fiberFlags';
 import {
 	createInstance,
 	appendInitialChild,
-	createTextInstance
+	createTextInstance,
+	Container
 } from 'hostConfig';
 import { HostComponent, HostText, HostRoot } from './workTags';
 // 递归中的归过程
@@ -43,12 +44,12 @@ export const completeWork = (wip: FiberNode) => {
 	}
 };
 
-function appendAllChildren(parent: FiberNode, wip: FiberNode) {
+function appendAllChildren(parent: Container, wip: FiberNode) {
 	let node = wip.child;
 
 	while (node !== null) {
 		if (node.tag === HostComponent || node.tag === HostText) {
-			appendInitialChild(parent.stateNode, node?.stateNode);
+			appendInitialChild(parent, node?.stateNode);
 		} else if (node.child !== null) {
 			node.child.return = node;
 			node = node.child;
