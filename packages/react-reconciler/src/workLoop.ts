@@ -34,8 +34,8 @@ function renderRoot(root: FiberRootNode) {
 		try {
 			workLoop();
 			break;
-		} catch {
-			console.error('workLoop error');
+		} catch (e) {
+			console.error('workLoop error', e);
 			workInProgress = null;
 		}
 	} while (true);
@@ -50,7 +50,7 @@ function commitRoot(root: FiberRootNode) {
 		return;
 	}
 	if (__DEV__) {
-		console.warn('commitRoot阶段开始');
+		console.warn('commit阶段开始', finishedWork);
 	}
 	// 重置
 	root.finishedWork = null;

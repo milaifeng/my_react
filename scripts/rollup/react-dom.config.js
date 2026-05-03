@@ -5,7 +5,7 @@ import {
 	getBaseRollupPlugins
 } from './utils.js';
 import alias from '@rollup/plugin-alias';
-const { name, module } = getPackageJson('react-dom');
+const { name, module, peerDependencies } = getPackageJson('react-dom');
 
 // react-dom包的路径
 const pkgPath = resolvePkgPath(name);
@@ -19,15 +19,16 @@ export default [
 		output: [
 			{
 				file: `${distPath}/index.js`,
-				name: 'index.js',
+				name: 'ReactDOM',
 				format: 'umd'
 			},
 			{
 				file: `${distPath}/client.js`,
-				name: 'client.js',
+				name: 'client',
 				format: 'umd'
 			}
 		],
+		external: [...Object.keys(peerDependencies)],
 		plugins: [
 			...getBaseRollupPlugins(),
 			alias({
@@ -50,5 +51,18 @@ export default [
 				})
 			})
 		]
+	},
+	// react-dom测试工具包
+	{
+		input: `${pkgPath}/test-utils.ts`,
+		output: [
+			{
+				file: `${distPath}/test-utils.js`,
+				name: 'testUtils.js',
+				format: 'umd'
+			}
+		],
+		external: ['react', 'react-dom'],
+		plugins: getBaseRollupPlugins()
 	}
 ];

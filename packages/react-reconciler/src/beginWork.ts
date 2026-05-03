@@ -2,8 +2,14 @@
 import { ReactElementType } from '@/shared/ReactTypes';
 import { FiberNode } from './fiber';
 import { UpdateQueue, processUpdateQueue } from './updateQueue';
-import { HostRoot, HostComponent, HostText } from './workTags';
+import {
+	HostRoot,
+	HostComponent,
+	HostText,
+	FunctionComponent
+} from './workTags';
 import { mountChildFibers, reconcileChildFibers } from './childFibers';
+import { renderWithHooks } from './fiberHooks';
 
 export const beginWork = (wip: FiberNode) => {
 	// 返回子fiberNode节点
@@ -14,6 +20,8 @@ export const beginWork = (wip: FiberNode) => {
 			return updateHostComponent(wip);
 		case HostText:
 			return null;
+		case FunctionComponent:
+			return updateFunctionComponent(wip);
 		default:
 			if (__DEV__) {
 				console.warn(`beginwork标签未被处理：${wip.tag}`);
@@ -22,6 +30,12 @@ export const beginWork = (wip: FiberNode) => {
 	}
 	return null;
 };
+
+function updateFunctionComponent(wip: FiberNode) {
+	const nextChildren = renderWithHooks(wip);
+	reconcileChildren(wip, nextChildren);
+	return wip.child;
+}
 
 const updateHostRoot = (wip: FiberNode) => {
 	const baseState = wip.memoizedState;

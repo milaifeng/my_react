@@ -5,7 +5,7 @@ import { defineConfig } from 'eslint/config';
 
 export default defineConfig([
 	{
-		env: { browser: true, node: true, es2021: true },
+		env: { browser: true, node: true, es2021: true, jest: true },
 		extends: [
 			'eslint:recommended',
 			'plugin:@typescript-eslint/recommended',

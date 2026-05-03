@@ -21,6 +21,7 @@ export class FiberNode {
 	flags: Flags;
 	subtreeFlags: Flags;
 	updateQueue: unknown | null;
+	deletions: FiberNode[] | null;
 	constructor(tag: WorkTag, pendingProps: Props, key: Key) {
 		this.tag = tag;
 		this.key = key;
@@ -44,6 +45,7 @@ export class FiberNode {
 		this.alternate = null; // 指向另一个版本的Fiber节点，用于协调算法
 		this.flags = NoFlags; //标记当前节点的操作类型（副作用）
 		this.subtreeFlags = NoFlags; //标记当前节点的子树的操作类型（副作用）
+		this.deletions = null; // 记录需要删除的子节点
 	}
 }
 
@@ -67,7 +69,6 @@ export function createWorkinProgress(
 	if (wip === null) {
 		// 挂载
 		wip = new FiberNode(current.tag, pendingProps, current.key);
-		wip.type = current.type;
 		wip.stateNode = current.stateNode;
 		wip.alternate = current;
 		current.alternate = wip;
@@ -76,6 +77,7 @@ export function createWorkinProgress(
 		wip.pendingProps = pendingProps;
 		wip.flags = NoFlags;
 		wip.subtreeFlags = NoFlags;
+		wip.deletions = null;
 	}
 	wip.type = current.type;
 	wip.updateQueue = current.updateQueue;
@@ -90,7 +92,7 @@ export function createFiberFromElement(element: ReactElementType) {
 	let fiberTag: WorkTag = FunctionComponent;
 	if (typeof type === 'string') {
 		fiberTag = HostComponent;
-	} else if (typeof type === 'function') {
+	} else if (typeof type !== 'function') {
 		console.warn('createFiberFromElement 函数组件未被处理');
 	}
 	const fiber = new FiberNode(fiberTag, props, key);
