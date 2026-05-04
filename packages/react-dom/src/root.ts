@@ -1,9 +1,9 @@
 import {
 	createContainer,
 	updateContainer
-} from '@/react-reconciler/src/fiberReconciler';
+} from 'react-reconciler/src/fiberReconciler';
 import { Container } from './hostConfig';
-import { ReactElementType } from '@/shared/ReactTypes';
+import { ReactElementType } from 'shared/ReactTypes';
 import { initEvent } from './SyntheticEvent';
 
 export function createRoot(container: Container) {

@@ -1,10 +1,10 @@
-import { Props, ReactElementType } from '@/shared/ReactTypes';
+import { Props, ReactElementType } from 'shared/ReactTypes';
 import {
 	createFiberFromElement,
 	createWorkinProgress,
 	FiberNode
 } from './fiber';
-import { REACT_ELEMENT_TYPE } from '@/shared/ReactSymbols';
+import { REACT_ELEMENT_TYPE } from 'shared/ReactSymbols';
 import { HostText } from './workTags';
 import { Placement, ChildDeletion } from './fiberFlags';
 function ChildReconciler(shouldTrackEffects: boolean) {

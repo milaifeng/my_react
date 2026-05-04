@@ -1,4 +1,4 @@
-import { Props } from '@/shared/ReactTypes';
+import { Props } from 'shared/ReactTypes';
 import { Container } from './hostConfig';
 
 export const elementPropsKey = '__props';

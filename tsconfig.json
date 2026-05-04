@@ -18,10 +18,9 @@
 		"noImplicitReturns": false,
 		"skipLibCheck": true,
 		"allowSyntheticDefaultImports": true,
-		"rootDir": "./packages",
+		"baseUrl": "./packages",
 		"paths": {
-			"@/*": ["./packages/*"],
-			"hostConfig": ["./packages/react-dom/src/hostConfig.ts"]
+			"hostConfig": ["./react-dom/src/hostConfig.ts"]
 		}
 	}
 }

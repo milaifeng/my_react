@@ -1,5 +1,5 @@
 // 递归过程中的递过程
-import { ReactElementType } from '@/shared/ReactTypes';
+import { ReactElementType } from 'shared/ReactTypes';
 import { FiberNode } from './fiber';
 import { UpdateQueue, processUpdateQueue } from './updateQueue';
 import {

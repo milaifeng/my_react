@@ -1,6 +1,6 @@
-import { Dispatcher, Dispatch } from '@/react/src/currentDispatcher';
+import { Dispatcher, Dispatch } from 'react/src/currentDispatcher';
 import { FiberNode } from './fiber';
-import internals from '@/shared/internals';
+import internals from 'shared/internals';
 import {
 	createUpdate,
 	createUpdateQueue,
@@ -8,7 +8,7 @@ import {
 	processUpdateQueue,
 	UpdateQueue
 } from './updateQueue';
-import { Action } from '@/shared/ReactTypes';
+import { Action } from 'shared/ReactTypes';
 import { scheduleUpdateOnFiber } from './workLoop';
 interface Hook {
 	memoizedState: any;

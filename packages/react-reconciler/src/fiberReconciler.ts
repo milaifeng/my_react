@@ -7,7 +7,7 @@ import {
 	enqueueUpdate,
 	UpdateQueue
 } from './updateQueue';
-import { ReactElementType } from '@/shared/ReactTypes';
+import { ReactElementType } from 'shared/ReactTypes';
 import { scheduleUpdateOnFiber } from './workLoop';
 // 创建挂载DOM的FiberNode 和 FiberRootNode
 export function createContainer(container: Container) {

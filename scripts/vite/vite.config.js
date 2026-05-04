@@ -15,10 +15,6 @@ export default defineConfig({
 	resolve: {
 		alias: [
 			{
-				find: '@',
-				replacement: path.resolve(__dirname, '../../packages')
-			},
-			{
 				find: 'react',
 				replacement: resolvePkgPath('react')
 			},
