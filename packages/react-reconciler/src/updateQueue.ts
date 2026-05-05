@@ -3,6 +3,7 @@ import { Action } from 'shared/ReactTypes';
 
 export interface Update<State> {
 	action: Action<State>;
+	next: Update<any> | null;
 }
 export interface UpdateQueue<State> {
 	shared: { pending: Update<State> | null };
@@ -11,7 +12,8 @@ export interface UpdateQueue<State> {
 // 创建Update
 export function createUpdate<State>(action: Action<State>): Update<State> {
 	return {
-		action
+		action,
+		next: null
 	};
 }
 // 创建UpdateQueue更新队列
@@ -21,13 +23,24 @@ export const createUpdateQueue = <State>() => {
 		dispatch: null
 	} as UpdateQueue<State>;
 };
+
 // 入队更新 向UpdateQueue中添加更新的方法
 export const enqueueUpdate = <State>(
 	updateQueue: UpdateQueue<State>,
 	update: Update<State>
 ) => {
+	const pending = updateQueue.shared.pending;
+	if (pending === null) {
+		// pending = a -> a
+		update.next = update;
+	} else {
+		// pending = b -> a -> b
+		update.next = pending.next;
+		pending.next = update;
+	}
 	updateQueue.shared.pending = update;
 };
+
 // 处理更新队列 执行UpdateQueue中的更新方法
 export const processUpdateQueue = <State>(
 	baseState: State,

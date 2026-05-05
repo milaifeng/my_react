@@ -6,7 +6,8 @@ import {
 	HostRoot,
 	HostComponent,
 	HostText,
-	FunctionComponent
+	FunctionComponent,
+	Fragment
 } from './workTags';
 import { mountChildFibers, reconcileChildFibers } from './childFibers';
 import { renderWithHooks } from './fiberHooks';
@@ -22,6 +23,8 @@ export const beginWork = (wip: FiberNode) => {
 			return null;
 		case FunctionComponent:
 			return updateFunctionComponent(wip);
+		case Fragment:
+			return updateFragment(wip);
 		default:
 			if (__DEV__) {
 				console.warn(`beginwork标签未被处理：${wip.tag}`);
@@ -53,6 +56,12 @@ const updateHostRoot = (wip: FiberNode) => {
 const updateHostComponent = (wip: FiberNode) => {
 	const nextProps = wip.pendingProps;
 	const nextChildren = nextProps.children;
+	reconcileChildren(wip, nextChildren);
+	return wip.child;
+};
+
+const updateFragment = (wip: FiberNode) => {
+	const nextChildren = wip.pendingProps;
 	reconcileChildren(wip, nextChildren);
 	return wip.child;
 };
