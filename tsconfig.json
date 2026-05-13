@@ -1,6 +1,7 @@
 {
 	"compileOnSave": true,
 	"include": ["./packages/**/*"],
+	"clean": true,
 	"compilerOptions": {
 		"target": "esnext",
 		"useDefineForClassFields": true,
@@ -18,7 +19,9 @@
 		"noImplicitReturns": false,
 		"skipLibCheck": true,
 		"allowSyntheticDefaultImports": true,
+		"rootDir": "./packages",
 		"baseUrl": "./packages",
+		"ignoreDeprecations": "6.0",
 		"paths": {
 			"hostConfig": ["./react-dom/src/hostConfig.ts"]
 		}

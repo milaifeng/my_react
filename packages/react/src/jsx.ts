@@ -1,36 +1,31 @@
 import { REACT_ELEMENT_TYPE, REACT_FRAGMENT_TYPE } from 'shared/ReactSymbols';
 import {
-	ReactElementType,
-	ElementType,
+	Type,
 	Key,
 	Ref,
-	Props
+	Props,
+	ReactElementType,
+	ElementType
 } from 'shared/ReactTypes';
+
+// ReactElement
+
 const ReactElement = function (
-	type: ElementType,
+	type: Type,
 	key: Key,
 	ref: Ref,
 	props: Props
 ): ReactElementType {
-	const element: ReactElementType = {
+	const element = {
 		$$typeof: REACT_ELEMENT_TYPE,
-		type: type,
+		type,
 		key,
 		ref,
 		props,
 		__mark: 'KaSong'
 	};
-
 	return element;
 };
-
-function hasValidKey(config: any) {
-	return config.key !== undefined;
-}
-
-function hasValidRef(config: any) {
-	return config.ref !== undefined;
-}
 
 export function isValidElement(object: any) {
 	return (
@@ -80,7 +75,7 @@ export const createElement = (
 
 export const Fragment = REACT_FRAGMENT_TYPE;
 
-export const jsxDEV = (type: ElementType, config: any, maybeKey: any) => {
+export const jsx = (type: ElementType, config: any, maybeKey: any) => {
 	let key: Key = null;
 	const props: Props = {};
 	let ref: Ref = null;
@@ -110,3 +105,5 @@ export const jsxDEV = (type: ElementType, config: any, maybeKey: any) => {
 
 	return ReactElement(type, key, ref, props);
 };
+
+export const jsxDEV = jsx;

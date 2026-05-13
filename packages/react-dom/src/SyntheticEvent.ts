@@ -1,12 +1,16 @@
+import { Container } from 'hostConfig';
+import {
+	unstable_ImmediatePriority,
+	unstable_NormalPriority,
+	unstable_runWithPriority,
+	unstable_UserBlockingPriority
+} from 'scheduler';
 import { Props } from 'shared/ReactTypes';
-import { Container } from './hostConfig';
 
 export const elementPropsKey = '__props';
 const validEventTypeList = ['click'];
-export interface DomElement extends Element {
-	[elementPropsKey]: Props;
-}
-type EventCallback = (event: Event) => void;
+
+type EventCallback = (e: Event) => void;
 
 interface SyntheticEvent extends Event {
 	__stopPropagation: boolean;
@@ -17,41 +21,78 @@ interface Paths {
 	bubble: EventCallback[];
 }
 
-export function updateFiberProps(node: DomElement, props: Props) {
+export interface DOMElement extends Element {
+	[elementPropsKey]: Props;
+}
+
+// dom[xxx] = reactElemnt props
+export function updateFiberProps(node: DOMElement, props: Props) {
 	node[elementPropsKey] = props;
 }
+
 export function initEvent(container: Container, eventType: string) {
 	if (!validEventTypeList.includes(eventType)) {
-		console.warn('当前不支持的eventType', eventType);
+		console.warn('当前不支持', eventType, '事件');
 		return;
 	}
 	if (__DEV__) {
-		console.log('初始化事件', eventType);
+		console.log('初始化事件：', eventType);
 	}
 	container.addEventListener(eventType, (e) => {
 		dispatchEvent(container, eventType, e);
 	});
 }
 
-function dispatchEvent(container: Container, eventType: string, event: Event) {
-	const targetElement = event.target;
+function createSyntheticEvent(e: Event) {
+	const syntheticEvent = e as SyntheticEvent;
+	syntheticEvent.__stopPropagation = false;
+	const originStopPropagation = e.stopPropagation;
+
+	syntheticEvent.stopPropagation = () => {
+		syntheticEvent.__stopPropagation = true;
+		if (originStopPropagation) {
+			originStopPropagation();
+		}
+	};
+	return syntheticEvent;
+}
+
+function dispatchEvent(container: Container, eventType: string, e: Event) {
+	const targetElement = e.target;
+
 	if (targetElement === null) {
-		console.warn('事件目标为空', event);
+		console.warn('事件不存在target', e);
 		return;
 	}
+
 	// 1. 收集沿途的事件
-	const { capture, bubble } = collectPaths(
-		targetElement as DomElement,
+	const { bubble, capture } = collectPaths(
+		targetElement as DOMElement,
 		container,
 		eventType
 	);
 	// 2. 构造合成事件
-	const se = createSyntheticEvent(event);
-	// 3. 遍历capture阶段的事件
+	const se = createSyntheticEvent(e);
+
+	// 3. 遍历captue
 	triggerEventFlow(capture, se);
-	// 4. 遍历bubbling阶段的事件
+
 	if (!se.__stopPropagation) {
+		// 4. 遍历bubble
 		triggerEventFlow(bubble, se);
+	}
+}
+
+function triggerEventFlow(paths: EventCallback[], se: SyntheticEvent) {
+	for (let i = 0; i < paths.length; i++) {
+		const callback = paths[i];
+		unstable_runWithPriority(eventTypeToSchdulerPriority(se.type), () => {
+			callback.call(null, se);
+		});
+
+		if (se.__stopPropagation) {
+			break;
+		}
 	}
 }
 
@@ -64,7 +105,7 @@ function getEventCallbackNameFromEventType(
 }
 
 function collectPaths(
-	targetElement: DomElement,
+	targetElement: DOMElement,
 	container: Container,
 	eventType: string
 ) {
@@ -72,50 +113,41 @@ function collectPaths(
 		capture: [],
 		bubble: []
 	};
+
 	while (targetElement && targetElement !== container) {
+		// 收集
 		const elementProps = targetElement[elementPropsKey];
 		if (elementProps) {
+			// click -> onClick onClickCapture
 			const callbackNameList = getEventCallbackNameFromEventType(eventType);
 			if (callbackNameList) {
-				callbackNameList.forEach((callbackName, index) => {
+				callbackNameList.forEach((callbackName, i) => {
 					const eventCallback = elementProps[callbackName];
 					if (eventCallback) {
-						if (index === 0) {
-							// capture阶段 (捕获阶段)
+						if (i === 0) {
+							// capture
 							paths.capture.unshift(eventCallback);
 						} else {
-							// bubbling阶段 (冒泡阶段)
 							paths.bubble.push(eventCallback);
 						}
 					}
 				});
 			}
 		}
-		targetElement = targetElement.parentNode as DomElement;
+		targetElement = targetElement.parentNode as DOMElement;
 	}
 	return paths;
 }
 
-function createSyntheticEvent(event: Event) {
-	const syntheticEvent = event as SyntheticEvent;
-	syntheticEvent.__stopPropagation = false;
-	const originStopPropagation = event.stopPropagation;
-	syntheticEvent.stopPropagation = () => {
-		syntheticEvent.__stopPropagation = true;
-		if (originStopPropagation) {
-			originStopPropagation();
-		}
-	};
-	return syntheticEvent;
-}
-
-function triggerEventFlow(paths: EventCallback[], se: SyntheticEvent) {
-	for (let i = 0; i < paths.length; i++) {
-		const callback = paths[i];
-		callback.call(null, se);
-
-		if (se.__stopPropagation) {
-			break;
-		}
+function eventTypeToSchdulerPriority(eventType: string) {
+	switch (eventType) {
+		case 'click':
+		case 'keydown':
+		case 'keyup':
+			return unstable_ImmediatePriority;
+		case 'scroll':
+			return unstable_UserBlockingPriority;
+		default:
+			return unstable_NormalPriority;
 	}
 }

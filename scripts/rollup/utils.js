@@ -20,13 +20,22 @@ export function getPackageJson(pkgName) {
 	return JSON.parse(str);
 }
 
-export function getBaseRollupPlugins({ __DEV__ = true, typescript = {} } = {}) {
-	return [
-		replace({
-			preventAssignment: true,
-			values: { __DEV__: JSON.stringify(__DEV__) }
-		}),
-		cjs(),
-		typescript2(typescript)
-	];
+// export function getBaseRollupPlugins({ __DEV__ = true, typescript = {} } = {}) {
+// 	return [
+// 		replace({
+// 			values: { __DEV__: JSON.stringify(__DEV__) }
+// 		}),
+// 		cjs(),
+// 		typescript2(typescript)
+// 	];
+// }
+
+export function getBaseRollupPlugins({
+	alias = {
+		__DEV__: true,
+		preventAssignment: true
+	},
+	typescript = {}
+} = {}) {
+	return [typescript2(typescript), replace(alias), cjs()];
 }

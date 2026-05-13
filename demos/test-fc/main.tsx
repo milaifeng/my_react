@@ -1,27 +1,33 @@
-import ReactDOM from 'react-dom/client';
-import { useState } from 'react';
+// import ReactDOM from 'react-dom/client';
+import { useState, useEffect } from 'react';
 
 function App() {
-	const [number, setNumber] = useState(2);
-	console.log(number);
-	const arr =
-		number % 2 === 0
-			? [<li key="1">1</li>, <li key="2">2</li>, <li key="3">3</li>]
-			: [<li key="3">3</li>, <li key="2">2</li>, <li key="1">1</li>];
-	// return <ul onClick={() => setNumber(number + 1)}>{arr}</ul>;
+	const [number, setNumber] = useState(0);
+	useEffect(() => {
+		console.log('APP mount');
+	}, []);
+	useEffect(() => {
+		console.log('number change create', number);
+		return () => {
+			console.log('number change destroy', number);
+		};
+	}, [number]);
+
 	return (
-		<ul onClick={() => setNumber(number + 1)}>
-			<li>4</li>
-			<li>5</li>
-			{arr}
-		</ul>
+		<div onClick={() => setNumber(number + 1)}>
+			{number === 0 ? <Child /> : 'noop'}
+		</div>
 	);
 }
 
 function Child() {
-	return <div>Child</div>;
+	useEffect(() => {
+		console.log('Child mount');
+		return () => console.log('Child destroy');
+	}, []);
+	return 'Child';
 }
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-	<App />
-);
+// ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+// 	<App />
+// );
